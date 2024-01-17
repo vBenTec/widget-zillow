@@ -20,10 +20,7 @@ import TheAppSidebar from "@/Components/layout/TheAppSidebar.vue";
         <the-app-sidebar class="main-layout__sidebar"/>
     </div>
 </template>
-
 <style lang="scss" scoped>
-// For some reason the mixins are not found when imported from the mixin file
-
 @mixin break($breakpoint) {
     @if $breakpoint == phone {
         @media only screen and (min-width: 43.75em) {

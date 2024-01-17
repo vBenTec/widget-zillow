@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import {Link} from '@inertiajs/vue3';
+
 // ************* PROPS ************* //
 // ************* TYPES ************* //
+import BaseIcon from "@/Components/library/BaseIcon.vue";
+
 interface Props {
-    src: string
-    size: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg'
 }
 
 // ************* PROPS ************* //
@@ -14,10 +17,13 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <figure class="logo size" :class="{'sm': 'size--small', 'md': 'size--medium', 'lg': 'size--large'}[size]">
-        <!--     :TODO translation   -->
-        <img :src="src" alt="company logo">
-    </figure>
+    <Link class="inline-block" href="/">
+        <figure class="logo size" :class="{'sm': 'size--small', 'md': 'size--medium', 'lg': 'size--large'}[size]">
+            <!--     :TODO translation   -->
+            <base-icon class="text-black dark:text-white" :icon="{name: 'fa-squarespace', scale: 2}"/>
+            <!--        <img :src="src" alt="company logo">-->
+        </figure>
+    </Link>
 </template>
 
 <style lang="scss" scoped>
@@ -25,6 +31,9 @@ withDefaults(defineProps<Props>(), {
     border-radius: 100%;
     overflow: hidden;
     box-shadow: 0 0 1rem 0 red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     img {
         display: inline-block;
