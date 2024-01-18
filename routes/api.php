@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WeatherController;
+use App\Http\Controllers\GeoController;
+use App\Http\Controllers\CryptocurrencyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/weather', [WeatherController::class, 'getWeatherData']);
+Route::get('/geocode', [GeoController::class, 'getGeoData']);
+Route::get('/cryptocurrencies', [CryptocurrencyController::class, 'getCryptocurrencies']);
