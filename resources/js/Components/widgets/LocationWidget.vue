@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import {computed} from 'vue';
-import type {GeoData} from '@/types/geoData'
+// ************* import COMPONENTS ************* //
 import BaseIcon from "@/Components/library/BaseIcon.vue";
 import BaseButton from "@/Components/library/BaseButton.vue";
+// ************* import UTILS & HELPERS ************* //
+import {computed} from 'vue';
+// ************* import TYPES ************* //
+import type {GeoData} from '@/types/geocodeApiTypes'
 
 // ************* TYPES ************* //
 interface Props {
@@ -15,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
     imgSrc: 'https://images.pexels.com/photos/32307/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600'
 })
 
+// ************* GETTERS ************* //
 const wikiUrl = computed(() => {
     const wikiSlug = props.geoData.osmtags.wikipedia
     return `https://wikipedia.org/wiki/${wikiSlug}`

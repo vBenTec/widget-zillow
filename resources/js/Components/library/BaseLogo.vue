@@ -18,9 +18,9 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <Link class="inline-block" href="/">
-        <figure class="logo size" :class="{'sm': 'size--small', 'md': 'size--medium', 'lg': 'size--large'}[size]">
+        <figure class="logo size shadow-[0_1px_0.2rem_0_rgba(0,0,0,0.1)] dark:shadow-[0_1px_0.2rem_0_rgba(255,255,255,.2)]" :class="{'sm': 'size--small', 'md': 'size--medium', 'lg': 'size--large'}[size]">
             <!--     :TODO translation   -->
-            <base-icon class="text-gray-400 dark:text-white" :icon="{name: 'fa-squarespace', scale: 2}"/>
+            <base-icon styling="none" class="text-gray-400 dark:text-white" :icon="{name: 'fa-squarespace', scale: 2}"/>
             <!--        <img :src="src" alt="company logo">-->
         </figure>
     </Link>
@@ -30,7 +30,6 @@ withDefaults(defineProps<Props>(), {
 .logo {
     border-radius: 100%;
     overflow: hidden;
-    box-shadow: 0 0 1rem 0 red;
     display: flex;
     justify-content: center;
     align-items: center;

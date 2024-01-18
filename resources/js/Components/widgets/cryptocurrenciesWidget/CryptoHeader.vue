@@ -35,7 +35,6 @@ const checkListForIcon = (ticker: string) => {
 </template>
 
 <style scoped lang="scss">
-:has
 .ticker-placeholder {
     width: 1.2rem;
     height: 1.2rem;

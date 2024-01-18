@@ -10,7 +10,7 @@ interface Props {
 }
 
 // ************* PROPS ************* //
-const props = defineProps<Props>()
+defineProps<Props>()
 
 // ************* FUNCTIONS | METHODS ************* //
 const getStats = (crypto: CryptoData) => {

@@ -159,7 +159,7 @@ function kelvinToFahrenheit(kelvin: number): number {
     left: 0;
     height: 100%;
     transition: all 200ms ease-in-out;
-    box-shadow: 0 0 0.4rem 0 lightgrey;
+    box-shadow: 0 0 0.2rem 0 lightgrey;
     display: flex;
     flex-direction: column;
 
