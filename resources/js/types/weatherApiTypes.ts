@@ -1,3 +1,5 @@
+import type {BaseApiResponse} from './baseApiTypes'
+
 export interface WeatherData {
     lat: number;
     lon: number;
@@ -112,3 +114,5 @@ export interface WeatherData {
         }
     ];
 }
+
+export type WeatherApiResponse = BaseApiResponse<WeatherData>

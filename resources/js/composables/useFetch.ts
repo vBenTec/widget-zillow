@@ -1,19 +1,25 @@
 import {ref} from 'vue'
+import {BaseApiResponse} from "@/types/baseApiTypes";
 
-export const useFetch = <D>() => {
+export const useFetch =  () => {
     const isFetching = ref(false)
     const error = ref<Error>()
-    const data = ref<D>()
+    const data = ref<unknown>()
 
-    const callApi = (async (cb: () => Promise<D>) => {
+    const callApi = async <D>(cb: () => Promise<D>) => {
         try {
-            const res = await cb()
+            const res: BaseApiResponse<D> = await cb()
+
+            if (res?.status.toString().includes('20')) {
+                data.value = res.data
+            }
             console.log(res)
+            return res as D
         } catch (e) {
             error.value = e
             console.error(e)
         }
-    })
+    }
 
     return {
         callApi, isFetching, error, data
