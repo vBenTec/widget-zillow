@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import {Link} from '@inertiajs/vue3';
 import TheAppHeader from "@/Components/layout/TheAppHeader.vue";
 import TheAppSidebar from "@/Components/layout/TheAppSidebar.vue";
 
 const appHeader = ref<InstanceType<typeof TheAppHeader>>()
 const mainWrapper = ref<HTMLElement>()
+
 onMounted(() => {
     if (!appHeader.value || !mainWrapper.value) return
     const headerHeight = appHeader.value.$el.clientHeight
@@ -53,6 +48,7 @@ onMounted(() => {
 
 .main-layout {
     min-height: 100dvh;
+    overflow-y: auto;
 
     @include break(desktop) {
         display: grid;
