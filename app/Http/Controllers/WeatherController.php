@@ -12,7 +12,7 @@ class WeatherController extends Controller
      */
     public function getWeatherData(Request $request)
         {
-            $url = 'https://api.openweathermap.org/data/2.5/onecall'; // replace with your API URL
+            $url = 'https://api.openweathermap.org/data/2.5/onecall'; //
             $params = [
                 'lat' => $request->query('lat'),
                 'lon' => $request->query('lon'),

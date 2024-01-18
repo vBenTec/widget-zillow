@@ -7,7 +7,10 @@ import {useBreakpoints} from "@vueuse/core";
 import BaseInput from "@/Components/library/forms/BaseInput.vue";
 import {useFetch} from "@/composables/useFetch";
 import weatherApi from "@/services/weatherApi";
+import geoApi from "@/services/geoApi";
 import type {WeatherData} from "@/types/weatherApiTypes";
+import {GeoData} from "@/types/geocodeApiTypes";
+import LocationWidget from "@/Components/widgets/LocationWidget.vue";
 
 // ************* COMPOSABLES ************* //
 const {currentTimeAndDay} = useTime()
@@ -19,6 +22,7 @@ const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
 const isOpen = ref(true)
 const searchValue = ref('')
 const weatherData = ref<WeatherData>()
+const geoData = ref<GeoData>()
 const weatherURL = import.meta.env.VITE_URL_OPEN_WEATHER
 // ************* WATCH ************* //
 watch(() => breakpoints.desktop.value, (isDesktop) => {
@@ -32,7 +36,7 @@ const currentWeather = computed(() => ({
         big: `${weatherURL}/img/wn/${weatherData.value?.current.weather[0].icon}@2x.png`,
         small: `${weatherURL}/img/wn/${weatherData.value?.current.weather[0].icon}.png`,
     },
-    description: weatherData.value?.current.weather[0].description[0].toUpperCase() + weatherData.value?.current.weather[0].description.slice(1),
+    description: <string>weatherData.value?.current.weather[0].description[0].toUpperCase() + <string>weatherData.value?.current.weather[0].description.slice(1),
 }))
 // should be a util function in a real app
 const onToggleMenu = () => {
@@ -41,14 +45,18 @@ const onToggleMenu = () => {
 
 const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(async (position) => {
-        const res = await callApi(() => weatherApi.getWeather({
+        const coords = {
             lat: position.coords.latitude.toString(),
             lon: position.coords.longitude.toString()
-        }))
-        if (res?.data) {
-            weatherData.value = res.data
         }
+        const [resWeather, resGeo] = await Promise.allSettled([callApi(() => weatherApi.getWeather(coords)), callApi(() => geoApi.getGeoData(coords))])
 
+        if (resWeather?.value?.data) {
+            weatherData.value = resWeather.value.data
+        }
+        if (resGeo?.value?.data) {
+            geoData.value = resGeo.value.data
+        }
     })
 }
 
@@ -67,7 +75,7 @@ function kelvinToFahrenheit(kelvin: number): number {
         <div>
             <h3 class="dark:text-white mb-2 text-2xl">Hello, <strong>beautiful</strong> people</h3>
         </div>
-        <div>
+        <div class="grow flex flex-col">
             <div class="flex justify-center" v-if="weatherData">
                 <img class="block" :src="currentWeather.icon.big" alt="Weather icon">
             </div>
@@ -77,18 +85,24 @@ function kelvinToFahrenheit(kelvin: number): number {
                 <span class="mr-2">{{ currentTimeAndDay.day }},</span>
                 <span class="text-gray-400 text-bold">{{ currentTimeAndDay.time }}</span>
             </time>
-            <div v-if="weatherData">
+            <div class="flex flex-col grow mb-14" v-if="weatherData">
                 <div class="flex gap-2 items-center">
                     <img :src="currentWeather.icon.small" class="icon" alt="Current Weather Icon"/>
                     <span class="text-gray-800 dark:text-white text-sm">{{ currentWeather.description }}</span>
                 </div>
 
-<!--                <div class="flex gap-2 items-center">-->
-<!--                    <img :src="currentWeather.icon.small" class="icon" alt="Current Weather Icon"/>-->
-<!--                    <span class="text-gray-800 dark:text-white text-sm">{{ currentWeather.description }}</span>-->
-<!--                </div>-->
+                <location-widget class="mt-auto" v-if="geoData" :geo-data="geoData"/>
 
-<!--                <dl>-->
+
+                <!--   Show more info about the weather -->
+
+
+                <!--                <div class="flex gap-2 items-center">-->
+                <!--                    <img :src="currentWeather.icon.small" class="icon" alt="Current Weather Icon"/>-->
+                <!--                    <span class="text-gray-800 dark:text-white text-sm">{{ currentWeather.description }}</span>-->
+                <!--                </div>-->
+
+                <!--                <dl>-->
                 <!--                    <dt class="icon">Wind Status</dt>-->
                 <!--                    <dd class="text">-->
                 <!--                        <span>{{ weatherData.current.wind_speed }}</span>-->
@@ -146,6 +160,8 @@ function kelvinToFahrenheit(kelvin: number): number {
     height: 100%;
     transition: all 200ms ease-in-out;
     box-shadow: 0 0 0.4rem 0 lightgrey;
+    display: flex;
+    flex-direction: column;
 
     @include break(desktop) {
         position: static;
