@@ -3,7 +3,7 @@ import {OhVueIcon, addIcons} from 'oh-vue-icons'
 // Weather Icons
 import {WiSprinkle} from 'oh-vue-icons/icons'
 // Fontawesome Icons
-import {FaSquarespace, FaChevronLeft, FaChevronRight} from 'oh-vue-icons/icons'
+import {FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation} from 'oh-vue-icons/icons'
 
 /**
  * @info
@@ -14,7 +14,7 @@ import {FaSquarespace, FaChevronLeft, FaChevronRight} from 'oh-vue-icons/icons'
 // Weather Icons
 addIcons(WiSprinkle, FaSquarespace)
 // Fontawesome Icons
-addIcons(FaSquarespace, FaChevronLeft, FaChevronRight)
+addIcons(FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation)
 export default {
     components: {
         'LibIcon': OhVueIcon,
@@ -28,48 +28,39 @@ interface Props {
         name: string
         scale?: number
     }
+    tag?: 'div' | 'button'
     styling?: 'light-gray'
 }
 
 withDefaults(defineProps<Props>(), {
     styling: 'light-gray',
+    tag: 'div',
 })
 </script>
 
 <template>
-    <div v-bind:class="['icon-wrapper', `icon-wrapper--${styling}`]">
+    <component :is="tag" v-bind:class="['icon-wrapper', `icon-wrapper--${styling}`]">
         <lib-icon
             v-bind:class="[`icon-wrapper__icon--${styling}`]"
             v-bind:name="icon.name"
             v-bind:scale="icon.scale || 1"
         />
         <slot/>
-    </div>
+    </component>
 </template>
 
-<style lang="postcss" scoped>
+<style lang="scss" scoped>
 .icon-wrapper {
-    @apply z-0 relative flex justify-center items-center;
+    z-index: 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     /* Styling */
     /* LIGHT GREY */
-
     &--light-gray {
-        @apply rounded-full text-gray-600;
-    }
-
-    &--light-gray::before,
-    &--light-gray::after {
-        content: '';
-        @apply -z-10 absolute block left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full;
-    }
-
-    &--light-gray::before {
-        @apply w-[80%] h-[80%] -z-10 bg-gray-100;
-    }
-
-    &--light-gray::after {
-        @apply w-[120%] h-[120%] -z-20 bg-[rgba(255,255,255,0.5)];
+        color: #d1d5db;
     }
 }
 </style>

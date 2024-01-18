@@ -4,14 +4,16 @@ import {useTime} from "@/composables/useTime";
 import BaseIcon from "@/Components/library/BaseIcon.vue";
 import {ref, watch} from "vue";
 import {useBreakpoints} from "@vueuse/core";
+import BaseInput from "@/Components/library/forms/BaseInput.vue";
 
 
 // ************* COMPOSABLES ************* //
-const {displayTime} = useTime()
+const {currentTimeAndDay} = useTime()
 const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
 
 // ************* local STATE ************* //
 const isOpen = ref(true)
+const searchValue = ref('')
 
 // ************* WATCH ************* //
 watch(() => breakpoints.desktop.value, (isDesktop) => {
@@ -23,20 +25,40 @@ watch(() => breakpoints.desktop.value, (isDesktop) => {
 const onToggleMenu = () => {
     isOpen.value = !isOpen.value
 }
+
+const getCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position)
+    })
+}
 </script>
 
 <template>
     <aside class="sidebar bg-gray-200 dark:bg-gray-800" :class="{'sidebar--hidden': !isOpen}">
-        <base-logo
-            class="mb-4"
-            src="https://images.pexels.com/photos/4994765/pexels-photo-4994765.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"/>
+        <div class="top-container mb-8">
+            <base-logo class=""/>
+            <base-input v-model="searchValue" placeholder="Search a town" type="search" class=" top-container__input"/>
+            <base-icon @click="getCurrentLocation" tag="button" :icon="{name:'fa-search-location', scale:1.2}"/>
+        </div>
+
         <div>
             <h3 class="dark:text-white mb-2 text-2xl">Hello, <strong>beautiful</strong> people</h3>
         </div>
         <div>
             <time class="dark:text-gray-200 text-black">
-                {{ displayTime }}
+                <span class="mr-2">{{ currentTimeAndDay.day }},</span>
+                <span class="text-gray-400 text-bold">{{ currentTimeAndDay.time }}</span>
             </time>
+            <div>
+                <div>
+                    <span class="icon">Icon</span>
+                    <span class="text">Cloudy</span>
+                </div>
+                <div>
+                    <span class="icon">Icon</span>
+                    <span class="text">Rain</span>
+                </div>
+            </div>
             <!--  Should be a component IMPORTANT ALWAYS last item-->
             <button @click="onToggleMenu" aria-roledescription="Opens and close nav bar"
                     class="flex justify-center items-center">
@@ -96,6 +118,17 @@ const onToggleMenu = () => {
 
         .chevron {
             transform: rotate(180deg);
+        }
+    }
+
+    // Childern
+    .top-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        &__input {
+            max-width: 10rem;
         }
     }
 }

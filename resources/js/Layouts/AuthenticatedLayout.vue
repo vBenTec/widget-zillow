@@ -9,6 +9,8 @@ import {Link} from '@inertiajs/vue3';
 import TheAppHeader from "@/Components/layout/TheAppHeader.vue";
 import TheAppSidebar from "@/Components/layout/TheAppSidebar.vue";
 
+
+
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 import {computed, onMounted, onUnmounted, ref} from "vue";
+
 /**
  * @info
  * Could also be a library of course
@@ -10,12 +11,15 @@ export const useTime = () => {
     const intervalForTime = ref<number | null>(null);
     const now = ref(new Date());
 
-    const displayTime = computed(() => {
+    const currentTimeAndDay = computed(() => {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const day = days[now.value.getDay()];
         const hours = now.value.getHours().toString().padStart(2, '0');
         const minutes = now.value.getMinutes().toString().padStart(2, '0');
-        return `${day}, ${hours}:${minutes}`;
+        return {
+            day,
+            time: `${hours}:${minutes}`
+        };
     });
 
     onMounted(() => {
@@ -30,5 +34,5 @@ export const useTime = () => {
         }
     });
 
-    return {displayTime}
+    return {currentTimeAndDay}
 }
