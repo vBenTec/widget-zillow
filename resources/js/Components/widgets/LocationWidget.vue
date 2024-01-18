@@ -24,35 +24,38 @@ const wikiUrl = computed(() => {
     return `https://wikipedia.org/wiki/${wikiSlug}`
 })
 
+const infos = computed(() =>
+    [
+        {
+            count: props.geoData.osmtags.population,
+            icon: 'fa-people-carry',
+        },
+        {
+            count: props.geoData.osmtags.is_in_region,
+            icon: 'fa-location-arrow',
+        },
+        {
+            count: props.geoData.elevation,
+            icon: 'fa-mountain',
+        }
+    ]
+)
+
+
 </script>
 
 <template>
-    <dl class="container" v-if="geoData">
+    <dl class="container dark:border dark:border-gray-100" v-if="geoData">
         <dt class="text-white text-sm relative z-10 font-bold mb-4">
             {{ `${geoData.city}, ${geoData.prov}, ${geoData.country}` }}
         </dt>
-        <dd class="relative z-10">
-            <div class="flex gap-2 items-center">
-                <base-icon class="text-gray-100" :icon="{name:'fa-people-carry'}"/>
+        <dd class="info-container">
+            <div v-for="(info, index) in infos" :key="info.icon + index" class="flex gap-2 items-center">
+                <base-icon class="text-gray-100" :icon="{name:info.icon}"/>
                 <span class="text-white">
-                {{ geoData.osmtags.population }}
+                {{ info.count }}
                 </span>
             </div>
-
-            <div class="flex gap-2 items-center">
-                <base-icon class="text-gray-100" :icon="{name:'fa-location-arrow'}"/>
-                <span class="text-white">
-                    {{ geoData.osmtags.is_in_region }}
-                </span>
-            </div>
-
-            <div class="flex gap-2 items-center mb-4">
-                <base-icon class="text-gray-100" :icon="{name:'fa-mountain'}"/>
-                <span class="text-white">
-                    {{ geoData.elevation }}
-                </span>
-            </div>
-
             <a :href="wikiUrl" target="_blank">
                 <base-button name="Wiki"/>
             </a>
@@ -69,6 +72,7 @@ const wikiUrl = computed(() => {
     background-image: url('https://images.pexels.com/photos/32307/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600');
     position: relative;
     overflow: clip;
+    box-shadow: none;
 
     &:before {
         content: '';
@@ -78,7 +82,18 @@ const wikiUrl = computed(() => {
         height: 100%;
         bottom: 0;
         left: 0;
-        background: linear-gradient(180deg, rgba(5, 3, 36, 0.6012780112044818) 100%, rgba(2, 0, 36, 0.3799894957983193) 0%);
+        background: rgba(0, 0, 0, 0.8);
+        display: block;
+
+    }
+
+    .info-container {
+        position: relative;
+        z-index: 10;
+
+        > :nth-last-child(2) {
+            margin-bottom: 1rem;
+        }
     }
 }
 </style>

@@ -1,19 +1,23 @@
 <script setup lang="ts">
+// ************* import COMPONENTS ************* //
 import BaseLogo from "@/Components/library/BaseLogo.vue";
-import {useTime} from "@/composables/useTime";
 import BaseIcon from "@/Components/library/BaseIcon.vue";
-import {ref, watch, computed} from "vue";
-import {useBreakpoints} from "@vueuse/core";
+import LocationWidget from "@/Components/widgets/LocationWidget.vue";
+import WeatherWidget from "@/Components/widgets/WeatherWidget.vue";
 import BaseInput from "@/Components/library/forms/BaseInput.vue";
+// ************* import COMPOSABLES ************* //
 import {useFetch} from "@/composables/useFetch";
+// ************* import UTILS & HELPERS ************* //
+import {ref, watch, onBeforeMount} from "vue";
+import {useBreakpoints} from "@vueuse/core";
+// ************* import UTILS & HELPERS ************* //
 import weatherApi from "@/services/weatherApi";
 import geoApi from "@/services/geoApi";
+// ************* import TYPES ************* //
 import type {WeatherData} from "@/types/weatherApiTypes";
-import {GeoData} from "@/types/geocodeApiTypes";
-import LocationWidget from "@/Components/widgets/LocationWidget.vue";
+import type {GeoData} from "@/types/geocodeApiTypes";
 
 // ************* COMPOSABLES ************* //
-const {currentTimeAndDay} = useTime()
 const {callApi, isFetching, data, error} = useFetch()
 
 const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
@@ -21,23 +25,15 @@ const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
 // ************* local STATE ************* //
 const isOpen = ref(true)
 const searchValue = ref('')
+const isSpaceSquadLocation = ref(false)
 const weatherData = ref<WeatherData>()
 const geoData = ref<GeoData>()
-const weatherURL = import.meta.env.VITE_URL_OPEN_WEATHER
 // ************* WATCH ************* //
 watch(() => breakpoints.desktop.value, (isDesktop) => {
     // If user changes manually the size of the window
     isOpen.value = !!isDesktop;
 }, {immediate: true})
 
-// ************* GETTERS ************* //
-const currentWeather = computed(() => ({
-    icon: {
-        big: `${weatherURL}/img/wn/${weatherData.value?.current.weather[0].icon}@2x.png`,
-        small: `${weatherURL}/img/wn/${weatherData.value?.current.weather[0].icon}.png`,
-    },
-    description: <string>weatherData.value?.current.weather[0].description[0].toUpperCase() + <string>weatherData.value?.current.weather[0].description.slice(1),
-}))
 // should be a util function in a real app
 const onToggleMenu = () => {
     isOpen.value = !isOpen.value
@@ -49,20 +45,30 @@ const getCurrentLocation = () => {
             lat: position.coords.latitude.toString(),
             lon: position.coords.longitude.toString()
         }
-        const [resWeather, resGeo] = await Promise.allSettled([callApi(() => weatherApi.getWeather(coords)), callApi(() => geoApi.getGeoData(coords))])
-
-        if (resWeather?.value?.data) {
-            weatherData.value = resWeather.value.data
-        }
-        if (resGeo?.value?.data) {
-            geoData.value = resGeo.value.data
-        }
+        await fetchAndLoadLocationData(coords)
     })
 }
 
-function kelvinToFahrenheit(kelvin: number): number {
-    return Math.ceil(kelvin - 273.15)
+
+const getSpaceSquadLocation = async () => {
+    isSpaceSquadLocation.value = true
+    const coords = {lat: '52.4683456', lon: '13.3872712'}
+    await fetchAndLoadLocationData(coords)
 }
+
+const fetchAndLoadLocationData = async (coords: { lat: string, lon: string }) => {
+    const [resWeather, resGeo] = await Promise.allSettled([callApi(() => weatherApi.getWeather(coords)), callApi(() => geoApi.getGeoData(coords))])
+    if (resWeather?.value?.data) {
+        weatherData.value = resWeather.value.data
+    }
+    if (resGeo?.value?.data) {
+        geoData.value = resGeo.value.data
+    }
+}
+onBeforeMount(() => {
+    getCurrentLocation()
+})
+
 </script>
 
 <template>
@@ -70,61 +76,24 @@ function kelvinToFahrenheit(kelvin: number): number {
         <div class="top-container mb-8">
             <base-logo class=""/>
             <base-input v-model="searchValue" placeholder="Search a town" type="search" class=" top-container__input"/>
-            <base-icon @click="getCurrentLocation" tag="button" :icon="{name:'fa-search-location', scale:1.2}"/>
+            <base-icon @click="getSpaceSquadLocation" tag="button" :icon="{name:'fa-search-location', scale:1.2}"/>
         </div>
         <div>
-            <h3 class="dark:text-white mb-2 text-2xl">Hello, <strong>beautiful</strong> people</h3>
+            <h3 class="dark:text-white mb-2 text-2xl">Hello,
+                <strong>{{ isSpaceSquadLocation ? 'SPACE_SQUAD' : 'beautiful' }}</strong>
+                {{ isSpaceSquadLocation ? '' : 'people' }} </h3>
         </div>
-        <div class="grow flex flex-col">
-            <div class="flex justify-center" v-if="weatherData">
-                <img class="block" :src="currentWeather.icon.big" alt="Weather icon">
-            </div>
-            <span class="block mb-4 text-5xl text-gray-800 dark:text-gray-300 pb-6 border-b border-gray-300"
-                  v-if="weatherData">{{ kelvinToFahrenheit(weatherData.current.temp) }}°C</span>
-            <time class="dark:text-gray-200 text-black">
-                <span class="mr-2">{{ currentTimeAndDay.day }},</span>
-                <span class="text-gray-400 text-bold">{{ currentTimeAndDay.time }}</span>
-            </time>
-            <div class="flex flex-col grow mb-14" v-if="weatherData">
-                <div class="flex gap-2 items-center">
-                    <img :src="currentWeather.icon.small" class="icon" alt="Current Weather Icon"/>
-                    <span class="text-gray-800 dark:text-white text-sm">{{ currentWeather.description }}</span>
-                </div>
-
+        <transition name="fade" appear>
+            <weather-widget class="grow flex flex-col" v-if="weatherData && geoData" :weather-data="weatherData"
+                            :geo-data="geoData">
                 <location-widget class="mt-auto" v-if="geoData" :geo-data="geoData"/>
-
-
-                <!--   Show more info about the weather -->
-
-
-                <!--                <div class="flex gap-2 items-center">-->
-                <!--                    <img :src="currentWeather.icon.small" class="icon" alt="Current Weather Icon"/>-->
-                <!--                    <span class="text-gray-800 dark:text-white text-sm">{{ currentWeather.description }}</span>-->
-                <!--                </div>-->
-
-                <!--                <dl>-->
-                <!--                    <dt class="icon">Wind Status</dt>-->
-                <!--                    <dd class="text">-->
-                <!--                        <span>{{ weatherData.current.wind_speed }}</span>-->
-                <!--                        <span class="text">{{ weatherData.current.wind_deg }}</span>-->
-                <!--                        <span class="text">{{ weatherData.current.wind_gust }}</span>-->
-                <!--                    </dd>-->
-                <!--                </dl>-->
-                <!--                <dl>-->
-                <!--                    <dt class="icon">Sunrise Status</dt>-->
-                <!--                    <dd class="text">-->
-                <!--                        <span>{{ weatherData.current.wind_speed }}</span>-->
-                <!--                        <span class="text">{{ weatherData.current.wind_deg }}</span>-->
-                <!--                        <span class="text">{{ weatherData.current.wind_gust }}</span>-->
-                <!--                    </dd>-->
-                <!--                </dl>-->
-            </div>
-            <!--  Should be a component IMPORTANT ALWAYS last item-->
-            <button @click="onToggleMenu" aria-roledescription="Opens and close nav bar"
-                    class="flex justify-center items-center">
-                <base-icon class="chevron dark:text-white text-black" :icon="{name:'fa-chevron-left', scale: 1.2}"/>
-            </button>
-        </div>
+            </weather-widget>
+        </transition>
+        <!--  Should be a component IMPORTANT ALWAYS last item-->
+        <button @click="onToggleMenu" aria-roledescription="Opens and close nav bar"
+                class="flex justify-center items-center">
+            <base-icon class="chevron dark:text-white text-black" :icon="{name:'fa-chevron-left', scale: 1.2}"/>
+        </button>
     </aside>
 </template>
 
@@ -216,5 +185,14 @@ function kelvinToFahrenheit(kelvin: number): number {
     @include break(desktop) {
         display: none;
     }
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>
