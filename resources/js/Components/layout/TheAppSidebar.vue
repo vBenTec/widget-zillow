@@ -5,10 +5,13 @@ import BaseIcon from "@/Components/library/BaseIcon.vue";
 import {ref, watch} from "vue";
 import {useBreakpoints} from "@vueuse/core";
 import BaseInput from "@/Components/library/forms/BaseInput.vue";
-
+import {useFetch} from "@/composables/useFetch";
+import weatherApi from "@/services/weatherApi";
 
 // ************* COMPOSABLES ************* //
 const {currentTimeAndDay} = useTime()
+const {callApi, isFetching, data, error} = useFetch()
+
 const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
 
 // ************* local STATE ************* //
@@ -29,6 +32,7 @@ const onToggleMenu = () => {
 const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition((position) => {
         console.log(position)
+        callApi(() => weatherApi.getWeather({lat: position.coords.latitude, lon: position.coords.longitude}))
     })
 }
 </script>
