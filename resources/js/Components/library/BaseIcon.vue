@@ -3,7 +3,20 @@ import {OhVueIcon, addIcons} from 'oh-vue-icons'
 // Weather Icons
 import {WiSprinkle} from 'oh-vue-icons/icons'
 // Fontawesome Icons
-import {FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation, FaMountain, FaPeopleCarry, FaLocationArrow} from 'oh-vue-icons/icons'
+import {
+    FaCaretUp,
+    FaCaretDown,
+    FaSquarespace,
+    FaChevronLeft,
+    FaChevronRight,
+    FaSearchLocation,
+    FaMountain,
+    FaPeopleCarry,
+    FaLocationArrow,
+    FaTrophy,
+    FaSortAmountUp,
+    FaRegularMoneyBillAlt
+} from 'oh-vue-icons/icons'
 
 /**
  * @info
@@ -14,7 +27,7 @@ import {FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation, FaMounta
 // Weather Icons
 addIcons(WiSprinkle, FaSquarespace)
 // Fontawesome Icons
-addIcons(FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation, FaMountain, FaPeopleCarry, FaLocationArrow)
+addIcons(FaRegularMoneyBillAlt,FaSortAmountUp,FaTrophy, FaCaretDown, FaCaretUp, FaSquarespace, FaChevronLeft, FaChevronRight, FaSearchLocation, FaMountain, FaPeopleCarry, FaLocationArrow)
 export default {
     components: {
         'LibIcon': OhVueIcon,
