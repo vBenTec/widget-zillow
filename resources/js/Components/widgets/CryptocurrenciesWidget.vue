@@ -132,6 +132,7 @@ const getStats = (crypto: CryptoData) => {
 
     .list {
         display: flex;
+        justify-content: center;
         gap: 1rem;
         border-bottom: 1px solid lightgrey;
 
