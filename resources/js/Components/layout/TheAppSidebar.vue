@@ -91,8 +91,8 @@ onBeforeMount(() => {
         </transition>
         <!--  Should be a component IMPORTANT ALWAYS last item-->
         <button @click="onToggleMenu" aria-roledescription="Opens and close nav bar"
-                class="flex justify-center items-center">
-            <base-icon class="chevron dark:text-white text-black" :icon="{name:'fa-chevron-left', scale: 1.2}"/>
+                class="flex justify-center items-center bg-gray-400">
+            <base-icon class="chevron dark:text-white text-black bg-gray-900" :icon="{name:'fa-chevron-left', scale: 1.2}"/>
         </button>
     </aside>
 </template>

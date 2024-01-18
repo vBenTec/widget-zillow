@@ -24,21 +24,22 @@ const wikiUrl = computed(() => {
     return `https://wikipedia.org/wiki/${wikiSlug}`
 })
 
-const infos = computed(() =>
-    [
-        {
-            count: props.geoData.osmtags.population,
-            icon: 'fa-people-carry',
-        },
-        {
-            count: props.geoData.osmtags.is_in_region,
-            icon: 'fa-location-arrow',
-        },
-        {
-            count: props.geoData.elevation,
-            icon: 'fa-mountain',
-        }
-    ]
+const infos = computed(() => {
+        return [
+            {
+                count: props.geoData.osmtags.population,
+                icon: 'fa-people-carry',
+            },
+            {
+                count: props.geoData.osmtags.is_in_region,
+                icon: 'fa-location-arrow',
+            },
+            {
+                count: props.geoData.elevation,
+                icon: 'fa-mountain',
+            }
+        ]
+    }
 )
 
 
@@ -51,10 +52,12 @@ const infos = computed(() =>
         </dt>
         <dd class="info-container">
             <div v-for="(info, index) in infos" :key="info.icon + index" class="flex gap-2 items-center">
-                <base-icon class="text-gray-100" :icon="{name:info.icon}"/>
-                <span class="text-white">
+                <template v-if="info.count">
+                    <base-icon class="text-gray-100" :icon="{name:info.icon}"/>
+                    <span class="text-white">
                 {{ info.count }}
                 </span>
+                </template>
             </div>
             <a :href="wikiUrl" target="_blank">
                 <base-button name="Wiki"/>
