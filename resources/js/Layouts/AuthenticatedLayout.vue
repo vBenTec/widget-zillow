@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -9,14 +9,19 @@ import {Link} from '@inertiajs/vue3';
 import TheAppHeader from "@/Components/layout/TheAppHeader.vue";
 import TheAppSidebar from "@/Components/layout/TheAppSidebar.vue";
 
-
-
+const appHeader = ref<InstanceType<typeof TheAppHeader>>()
+const mainWrapper = ref<HTMLElement>()
+onMounted(() => {
+    if (!appHeader.value || !mainWrapper.value) return
+    const headerHeight = appHeader.value.$el.clientHeight
+    mainWrapper.value.style.height = `calc(100vh - ${headerHeight}px)`
+})
 </script>
 
 <template>
     <div class="main-layout bg-gray-100 dark:bg-gray-900">
-        <the-app-header class="main-layout__header"/>
-        <div class="main-layout__main">
+        <the-app-header ref="appHeader" class="main-layout__header"/>
+        <div ref="mainWrapper" class="main-layout__main">
             <slot/>
         </div>
         <the-app-sidebar class="main-layout__sidebar"/>
@@ -67,6 +72,8 @@ import TheAppSidebar from "@/Components/layout/TheAppSidebar.vue";
 
         &__main {
             grid-area: main;
+            overflow-y: auto;
+            padding: 1rem;
         }
     }
 }

@@ -60,7 +60,7 @@ withDefaults(defineProps<Props>(), {
     /* Styling */
     /* LIGHT GREY */
     &--light-gray {
-        color: #d1d5db;
+        color: rgba(160, 174, 192, 0.56);
     }
 }
 </style>

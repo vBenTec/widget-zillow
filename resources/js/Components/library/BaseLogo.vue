@@ -20,7 +20,7 @@ withDefaults(defineProps<Props>(), {
     <Link class="inline-block" href="/">
         <figure class="logo size" :class="{'sm': 'size--small', 'md': 'size--medium', 'lg': 'size--large'}[size]">
             <!--     :TODO translation   -->
-            <base-icon class="text-black dark:text-white" :icon="{name: 'fa-squarespace', scale: 2}"/>
+            <base-icon class="text-gray-400 dark:text-white" :icon="{name: 'fa-squarespace', scale: 2}"/>
             <!--        <img :src="src" alt="company logo">-->
         </figure>
     </Link>
