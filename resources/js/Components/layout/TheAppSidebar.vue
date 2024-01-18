@@ -75,7 +75,7 @@ onBeforeMount(() => {
     <aside class="sidebar bg-gray-200 dark:bg-gray-800" :class="{'sidebar--hidden': !isOpen}">
         <div class="top-container mb-8">
             <base-logo class=""/>
-            <base-input v-model="searchValue" placeholder="Search a town" type="search" class=" top-container__input"/>
+            <base-input :disabled="true" v-model="searchValue" placeholder="Search a town" type="search" class=" top-container__input"/>
             <base-icon @click="getSpaceSquadLocation" tag="button" :icon="{name:'fa-search-location', scale:1.2}"/>
         </div>
         <div>
