@@ -12,8 +12,14 @@
 A fun repository to play around with Laravel and inertiajs. The idea is to create a widgets.
 
 ## MVP 1.0
+**light mode**
 ![Desktop_light.png](resources%2Fassets%2FDesktop_light.png)
 
+**dark mode**
+![Desktop_Dark.png](resources%2Fassets%2FDesktop_dark.png)
+
+**mobile dark**
+![Sidemenu_dark.png](resources%2Fassets%2FSidemenu_dark.png)
 ### Features
 1. Dark mode 
 
