@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import {ref, onBeforeMount} from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head} from '@inertiajs/vue3';
+// ************* import COMPONENTS ************* //
+import LoadingSpinner from "@/Components/library/LoadingSpinner.vue";
 import CryptocurrenciesWidget from "@/Components/widgets/CryptocurrenciesWidget.vue";
+import BaseError from "@/Components/library/BaseError.vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+// ************* import UTILS & HELPERS ************* //
+import {ref, onBeforeMount} from 'vue';
+import {Head} from '@inertiajs/vue3';
+import {addIcons} from 'oh-vue-icons'
+// ************* import COMPOSABLES ************* //
 import {useFetch} from "@/composables/useFetch";
 import cryptoApi from "@/services/cryptocurrenyApi";
-import {addIcons} from 'oh-vue-icons'
 
 const {callApi, isFetching, data, error} = useFetch()
 
@@ -23,7 +28,7 @@ onBeforeMount(async () => {
             return icons[iconName]
         }).filter((icon) => !!icon)
         addIcons(...iconList)
-        iconNameList.value = iconList.map((icon)=> icon.name)
+        iconNameList.value = iconList.map((icon) => icon.name)
     }
 })
 </script>
@@ -32,7 +37,14 @@ onBeforeMount(async () => {
     <Head title="Dashboard"/>
 
     <AuthenticatedLayout>
-        <cryptocurrencies-widget v-if="iconNameList && data?.data" :icon-list="iconNameList" :data="data?.data"/>
+        <transition name="fade">
+            <loading-spinner v-if="isFetching && !error"/>
+            <base-error v-else-if="!isFetching && error"/>
+            <cryptocurrencies-widget v-else-if="iconNameList && data?.data && !isFetching && !error"
+                                     :icon-list="iconNameList"
+                                     :data="data?.data"/>
+            <p v-else>No crypto data available</p>
+        </transition>
     </AuthenticatedLayout>
 
     <!--     Left Code for future use -->
