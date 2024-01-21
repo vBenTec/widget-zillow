@@ -5,6 +5,7 @@ import BaseIcon from "@/Components/library/BaseIcon.vue";
 import LocationWidget from "@/Components/widgets/LocationWidget.vue";
 import WeatherWidget from "@/Components/widgets/WeatherWidget.vue";
 import BaseInput from "@/Components/library/forms/BaseInput.vue";
+import LoadingSpinner from "@/Components/library/LoadingSpinner.vue";
 // ************* import COMPOSABLES ************* //
 import {useFetch} from "@/composables/useFetch";
 // ************* import UTILS & HELPERS ************* //
@@ -16,14 +17,17 @@ import geoApi from "@/services/geoApi";
 // ************* import TYPES ************* //
 import type {WeatherData} from "@/types/weatherApiTypes";
 import type {GeoData} from "@/types/geocodeApiTypes";
+import BaseError from "@/Components/library/BaseError.vue";
 
 // ************* COMPOSABLES ************* //
-const {callApi, isFetching, data, error} = useFetch()
+const {callApi} = useFetch()
 
 const breakpoints = useBreakpoints({desktop: 1100, tablet: 600, phone: 0})
 
 // ************* local STATE ************* //
+const hasFinishedLoading = ref(false)
 const isOpen = ref(true)
+const hasError = ref(false)
 const searchValue = ref('')
 const isSpaceSquadLocation = ref(false)
 const weatherData = ref<WeatherData>()
@@ -57,12 +61,19 @@ const getSpaceSquadLocation = async () => {
 }
 
 const fetchAndLoadLocationData = async (coords: { lat: string, lon: string }) => {
-    const [resWeather, resGeo] = await Promise.allSettled([callApi(() => weatherApi.getWeather(coords)), callApi(() => geoApi.getGeoData(coords))])
-    if (resWeather?.value?.data) {
-        weatherData.value = resWeather.value.data
-    }
-    if (resGeo?.value?.data) {
-        geoData.value = resGeo.value.data
+    try {
+        hasFinishedLoading.value = true
+        const [resWeather, resGeo] = await Promise.allSettled([callApi(() => weatherApi.getWeather(coords)), callApi(() => geoApi.getGeoData(coords))])
+        if (resWeather?.value?.data) {
+            weatherData.value = resWeather.value.data
+        }
+        if (resGeo?.value?.data) {
+            geoData.value = resGeo.value.data
+        }
+    } catch (e) {
+        console.error(e)
+    } finally {
+        hasFinishedLoading.value = false
     }
 }
 onBeforeMount(() => {
@@ -75,16 +86,24 @@ onBeforeMount(() => {
     <aside class="sidebar bg-gray-200 dark:bg-gray-800" :class="{'sidebar--hidden': !isOpen}">
         <div class="top-container mb-8">
             <base-logo class=""/>
-            <base-input :disabled="true" v-model="searchValue" placeholder="Search a town" type="search" class=" top-container__input"/>
+            <base-input :disabled="true" v-model="searchValue" placeholder="Search a town" type="search"
+                        class=" top-container__input"/>
             <base-icon @click="getSpaceSquadLocation" tag="button" :icon="{name:'fa-search-location', scale:1.2}"/>
         </div>
+
         <div>
             <h3 class="dark:text-white mb-2 text-2xl">Hello,
                 <strong>{{ isSpaceSquadLocation ? 'SPACE_SQUAD' : 'beautiful' }}</strong>
                 {{ isSpaceSquadLocation ? '' : 'people' }} </h3>
         </div>
+
+        <loading-spinner class="mt-8" v-if="hasFinishedLoading"/>
         <transition name="fade" appear>
-            <weather-widget class="grow flex flex-col" v-if="weatherData && geoData" :weather-data="weatherData"
+            <base-error v-if="hasError"/>
+        </transition>
+
+        <transition name="fade" appear>
+            <weather-widget class="grow flex flex-col" v-if="weatherData && geoData && !hasFinishedLoading" :weather-data="weatherData"
                             :geo-data="geoData">
                 <location-widget class="mt-auto" v-if="geoData" :geo-data="geoData"/>
             </weather-widget>
@@ -92,7 +111,8 @@ onBeforeMount(() => {
         <!--  Should be a component IMPORTANT ALWAYS last item-->
         <button @click="onToggleMenu" aria-roledescription="Opens and close nav bar"
                 class="flex justify-center items-center bg-gray-400">
-            <base-icon styling="none" class="chevron dark:text-white text-gray-600 bg-white dark:bg-gray-900" :icon="{name:'fa-chevron-left', scale: 1.2}"/>
+            <base-icon styling="none" class="chevron dark:text-white text-gray-600 bg-white dark:bg-gray-900"
+                       :icon="{name:'fa-chevron-left', scale: 1.2}"/>
         </button>
     </aside>
 </template>
